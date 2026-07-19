@@ -1,33 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My JavaScript Projects</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My JavaScript Projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12141c;
+    --panel:#1b1e29;
+    --panel-border:#2a2e3d;
+    --text:#e7e6e2;
+    --muted:#8c93a6;
+    --accent:#f0d642;
+    --accent-dim:#7a7024;
+    --cursor:#6fcf97;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(240,214,66,0.05), transparent 40%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .titlebar{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:14px 24px;
+    border-bottom:1px solid var(--panel-border);
+    background:#161822;
+  }
+  .dot{width:11px;height:11px;border-radius:50%;}
+  .dot.red{background:#ff5f57;}
+  .dot.yellow{background:#febc2e;}
+  .dot.green{background:#28c840;}
+  .titlebar span.path{
+    margin-left:16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  main{
+    max-width:760px;
+    margin:0 auto;
+    padding:56px 24px 80px;
+  }
+
+  .hero{
+    margin-bottom:48px;
+  }
+
+  .prompt{
+    font-family:'JetBrains Mono', monospace;
+    color:var(--cursor);
+    font-size:14px;
+    letter-spacing:0.02em;
+    margin:0 0 10px;
+  }
+  .prompt::before{content:"$ ";color:var(--muted);}
+
+  h1{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:clamp(28px, 5vw, 40px);
+    margin:0 0 6px;
+    letter-spacing:-0.01em;
+  }
+  h1 .cursor-blink{
+    display:inline-block;
+    width:0.5ch;
+    background:var(--accent);
+    margin-left:4px;
+    animation:blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .tagline{
+    color:var(--muted);
+    font-size:15px;
+    margin:0;
+    line-height:1.6;
+  }
+  .tagline strong{color:var(--text); font-weight:500;}
+
+  .stats{
+    display:flex;
+    gap:28px;
+    margin-top:24px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+  }
+  .stats div{color:var(--muted);}
+  .stats b{color:var(--accent); font-size:16px; display:block; font-weight:600;}
+
+  .tree{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    padding:8px 0;
+    overflow:hidden;
+  }
+
+  .folder{
+    border-bottom:1px solid var(--panel-border);
+  }
+  .folder:last-child{border-bottom:none;}
+
+  .folder-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 22px 10px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    color:var(--accent);
+    letter-spacing:0.03em;
+  }
+  .folder-head .icon{color:var(--accent-dim); font-size:14px;}
+  .folder-head .count{
+    margin-left:auto;
+    color:var(--muted);
+    font-size:11px;
+    font-weight:400;
+  }
+
+  ul.files{
+    list-style:none;
+    margin:0;
+    padding:0 0 8px;
+  }
+
+  ul.files li{
+    position:relative;
+    padding:0 22px 0 46px;
+  }
+
+  ul.files li::before{
+    content:"├──";
+    position:absolute;
+    left:20px;
+    color:var(--panel-border);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+  }
+  ul.files li:last-child::before{content:"└──";}
+
+  ul.files a{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    padding:8px 4px;
+    color:var(--text);
+    text-decoration:none;
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;
+    border-radius:6px;
+    transition:color 0.15s ease, padding-left 0.15s ease;
+  }
+  ul.files a::after{
+    content:"";
+    flex:1;
+    border-bottom:1px dotted var(--panel-border);
+    margin:0 8px;
+    transform:translateY(-4px);
+  }
+  ul.files a .label{
+    color:var(--muted);
+    font-family:'Inter', sans-serif;
+    font-size:13px;
+    font-weight:500;
+  }
+  ul.files a:hover{
+    color:var(--accent);
+    padding-left:10px;
+  }
+  ul.files a:hover .label{color:var(--text);}
+  ul.files a:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:2px;
+  }
+
+  footer{
+    margin-top:36px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+  }
+  footer .ok{color:var(--cursor);}
+
+  @media (prefers-reduced-motion: reduce){
+    .cursor-blink{animation:none;}
+  }
+
+  @media (max-width:480px){
+    main{padding:36px 14px 60px;}
+    .stats{gap:18px; flex-wrap:wrap;}
+    ul.files li{padding-left:38px;}
+    ul.files a::after{display:none;}
+  }
+</style>
 </head>
 <body>
 
-    <h1>My JavaScript Projects</h1>
-    <p>Click any project to view my work.</p>
+  <div class="titlebar">
+    <div class="dot red"></div>
+    <div class="dot yellow"></div>
+    <div class="dot green"></div>
+    <span class="path">~/projects/javascript</span>
+  </div>
 
-    <ol>
-        <li><a href="array/arrayassinment2.html">Array Assignment</a></li>
-        <li><a href="array/shopinglist2.html">Shopping List 2</a></li>
-        <li><a href="array/shopping list.html">Shopping List</a></li>
-        <li><a href="date/eventandduration.html">Event & Duration Calculator</a></li>
-        <li><a href="date/futureevent.html">Future Event Countdown</a></li>
-        <li><a href="function/birthday.html">Birthday Counter</a></li>
-        <li><a href="function/bulb.html">Bulb On/Off Project</a></li>
-        <li><a href="function/function.html">Bonus Marks Counter</a></li>
-        <li><a href="if and else/ifAndElse.html">If Else Assignment</a></li>
-        <li><a href="if and else/jsOperators.html">JS Operators Assignment</a></li>
-        <li><a href="loop/counting.html">Counting Project</a></li>
-        <li><a href="loop/evenNumber.html">Even Number Project</a></li>
-        <li><a href="loop/numberPattern.html">Number Pattern Project</a></li>
-        <li><a href="loop/sum.html">Sum Calculator</a></li>
-        <li><a href="loop/table.html">Multiplication Table</a></li>
-        <li><a href="string and number methods/studentOperator.html">Student Operator</a></li>
-    </ol>
+  <main>
+    <div class="hero">
+      <p class="prompt">ls -la ./javascript-projects</p>
+      <h1>My JavaScript Projects<span class="cursor-blink">&nbsp;</span></h1>
+      <p class="tagline">A running log of exercises while learning JS — <strong>arrays, loops, functions, conditionals, dates,</strong> and a few small tools built along the way.</p>
+      <div class="stats">
+        <div><b>17</b>files</div>
+        <div><b>7</b>topics</div>
+        <div><b>100%</b>vanilla JS</div>
+      </div>
+    </div>
+
+    <div class="tree">
+
+      <div class="folder">
+        <div class="folder-head"><span class="icon">▸</span> array/ <span class="count">3 files</span></div>
+        <ul class="files">
+          <li><a href="array/arrayassinment2.html">arrayassinment2.html<span class="label">Array Assignment</span></a></li>
+          <li><a href="array/shopinglist2.html">shopinglist2.html<span class="label">Shopping List 2</span></a></li>
+          <li><a href="array/shopping list.html">shopping list.html<span class="label">Shopping List</span></a></li>
+        </ul>
+      </div>
+
+      <div class="folder">
+        <div class="folder-head"><span class="icon">▸</span> date/ <span class="count">2 files</span></div>
+        <ul class="files">
+          <li><a href="date/eventandduration.html">eventandduration.html<span class="label">Event &amp; Duration Calculator</span></a></li>
+          <li><a href="date/futureevent.html">futureevent.html<span class="label">Future Event Countdown</span></a></li>
+        </ul>
+      </div>
+
+      <div class="folder">
+        <div class="folder-head"><span class="icon">▸</span> function/ <span class="count">3 files</span></div>
+        <ul class="files">
+          <li><a href="function/birthday.html">birthday.html<span class="label">Birthday Counter</span></a></li>
+          <li><a href="function/bulb.html">bulb.html<span class="label">Bulb On/Off Project</span></a></li>
+          <li><a href="function/function.html">function.html<span class="label">Bonus Marks Counter</span></a></li>
+        </ul>
+      </div>
+
+      <div class="folder">
+        <div class="folder-head"><span class="icon">▸</span> if and else/ <span class="count">2 files</span></div>
+        <ul class="files">
+          <li><a href="if and else/ifAndElse.html">ifAndElse.html<span class="label">If Else Assignment</span></a></li>
+          <li><a href="if and else/jsOperators.html">jsOperators.html<span class="label">JS Operators Assignment</span></a></li>
+        </ul>
+      </div>
+
+      <div class="folder">
+        <div class="folder-head"><span class="icon">▸</span> loop/ <span class="count">5 files</span></div>
+        <ul class="files">
+          <li><a href="loop/counting.html">counting.html<span class="label">Counting Project</span></a></li>
+          <li><a href="loop/evenNumber.html">evenNumber.html<span class="label">Even Number Project</span></a></li>
+          <li><a href="loop/numberPattern.html">numberPattern.html<span class="label">Number Pattern Project</span></a></li>
+          <li><a href="loop/sum.html">sum.html<span class="label">Sum Calculator</span></a></li>
+          <li><a href="loop/table.html">table.html<span class="label">Multiplication Table</span></a></li>
+        </ul>
+      </div>
+
+      <div class="folder">
+        <div class="folder-head"><span class="icon">▸</span> string and number methods/ <span class="count">1 file</span></div>
+        <ul class="files">
+          <li><a href="string and number methods/studentOperator.html">studentOperator.html<span class="label">Student Operator</span></a></li>
+        </ul>
+      </div>
+
+      <div class="folder">
+        <div class="folder-head"><span class="icon">▸</span> objects/ <span class="count">1 file</span></div>
+        <ul class="files">
+          <li><a href="objects/bikes.html">bikes.html<span class="label">Bikes Registry</span></a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <footer><span class="ok">✓</span> all files linked · click any file to open</footer>
+  </main>
 
 </body>
 </html>
